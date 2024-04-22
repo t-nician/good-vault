@@ -1,7 +1,7 @@
 import peewee
 
 
-database_connection = peewee.SqliteDatabase("./workspace/database.sqlite")
+database_connection = peewee.SqliteDatabase(":memory:")
 database_connection.connect()
 
 

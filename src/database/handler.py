@@ -1,4 +1,4 @@
-from database import model
+from database import model, secure
 
 
 class AccountHandler:
@@ -13,4 +13,12 @@ class AccountHandler:
     
 
     def __initialize_account(self, password: str):
-        pass
+        hashes = secure.hash_password(password, 2)
+
+        authorization_key, encryption_key = hashes[0], hashes[1]
+
+        encrypted_vault, vault_nonce = secure.encrypt_data(encryption_key, "{}")
+
+        self.account_model.password = authorization_key.hex()
+
+
