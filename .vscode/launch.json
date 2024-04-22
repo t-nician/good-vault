@@ -10,7 +10,6 @@
             "request": "launch",
             "program": "./src/main.py",
             "console": "integratedTerminal",
-            "args": ["backend", "start", "Hello!"]
         }
     ]
 }

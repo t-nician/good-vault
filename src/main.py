@@ -1,18 +1,8 @@
-# System Modules
-import sys
-
-# Arg check, we need atleast one argument!
-assert len(sys.argv) > 1, "No argument provided!"
+import database
 
 
-# Custom Modules
-import cli, backend
+account, message = database.try_get_account("username")
 
-
-@cli.add_command("backend", "start")
-def _(target: str | None = ""):
-    print(target)
-
-
-cli.execute_command(sys.argv[1], sys.argv[2::])
+if not account:
+    account, message = database.try_create_account("username", "password")
 
