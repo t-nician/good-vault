@@ -1,7 +1,7 @@
 import peewee
 
 
-database_connection = peewee.SqliteDatabase(":memory:")
+database_connection = peewee.SqliteDatabase("./workspace/database.sqlite")
 database_connection.connect()
 
 
@@ -15,7 +15,7 @@ class Account(BaseModel):
     password = peewee.TextField(null=True, default="")
     email = peewee.TextField(null=True, default="")
 
-    # { hash_length: int, salt_length: int, N: int, r: int, p: int }
+    # { salt: str, hash_length: int, salt_length: int, N: int, r: int, p: int }
     scrypt = peewee.TextField(null=True, default="")
 
     # { data: str, nonce: str }

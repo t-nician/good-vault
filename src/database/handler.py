@@ -1,3 +1,5 @@
+import json
+
 from database import model, secure
 
 
@@ -12,13 +14,34 @@ class AccountHandler:
             self.__initialize_account(account_password)
     
 
+    def decrypt_vault(password: str) -> dict:
+        pass
+
+
     def __initialize_account(self, password: str):
-        hashes = secure.hash_password(password, 2)
+        hashes, salt = secure.hash_password(password, 2)
 
         authorization_key, encryption_key = hashes[0], hashes[1]
 
-        encrypted_vault, vault_nonce = secure.encrypt_data(encryption_key, "{}")
+        encrypted_vault, vault_nonce = secure.encrypt_data(encryption_key, b"{}")
 
         self.account_model.password = authorization_key.hex()
+        self.account_model.vault = json.dumps({
+            "data": encrypted_vault.hex(),
+            "nonce": vault_nonce.hex()
+        })
+
+        self.account_model.scrypt = json.dumps({
+            "salt": salt.hex(),
+            "hash_length": secure.BASE_HASH_LENGTH,
+            "salt_length": secure.BASE_SALT_LENGTH,
+            "N": secure.BASE_HASH_N,
+            "r": secure.BASE_HASH_R,
+            "p": secure.BASE_HASH_P
+        })
+
+        self.account_model.entries = "[]"
+
+        self.account_model.save()
 
 
