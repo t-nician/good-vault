@@ -1,0 +1,3 @@
+pycryptodome
+peewee
+fastapi
