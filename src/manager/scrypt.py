@@ -45,25 +45,31 @@ class ScryptParams:
         self.salt = get_random_bytes(self.length)
         
         
-    def get_authorization_hash(self, password: str | None = None) -> bytes:
+    def get_authorization_key(self, password: str | None = None) -> bytes:
+        if password is None and self.password is None:
+            raise Exception("No password provided!")
+        
         return scrypt(
-            password or self.password, 
-            self.salt, 
-            self.length, 
-            self.param_n, 
-            self.param_r, 
-            self.param_p, 
+            password=password or self.password, 
+            salt=self.salt, 
+            key_len=self.length, 
+            N=self.param_n, 
+            r=self.param_r, 
+            p=self.param_p, 
             num_keys=1
         )
 
     
-    def get_encryption_hash(self, password: str | None = None) -> bytes:
+    def get_encryption_key(self, password: str | None = None) -> bytes:
+        if password is None and self.password is None:
+            raise Exception("No password provided!")
+        
         return scrypt(
-            password or self.password, 
-            self.salt, 
-            self.length, 
-            self.param_n, 
-            self.param_r, 
-            self.param_p, 
+            password=password or self.password, 
+            salt=self.salt, 
+            key_len=self.length, 
+            N=self.param_n, 
+            r=self.param_r, 
+            p=self.param_p, 
             num_keys=2
         )[1]

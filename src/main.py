@@ -29,5 +29,10 @@ import manager
 
 account = manager.account.AccountObject("username")
 
-account.scrypt.remember_password("password")
+account.remember_password("password")
 
+account.create_private_entry(
+    name="entry", 
+    type="account", 
+    data={"username": "username", "password": "password"}
+)
