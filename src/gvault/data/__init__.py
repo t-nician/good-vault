@@ -1,1 +1,1 @@
-from gvault.data import item
+from gvault.data import entry
