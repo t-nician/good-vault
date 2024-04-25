@@ -3,24 +3,99 @@ DEFAULT_SCRYPT_N = 16384
 DEFAULT_SCRYPT_R = 8
 DEFAULT_SCRYPT_P = 1
 
+_type = type
 
+import json
+
+from Crypto.Cipher import AES
 from Crypto.Protocol.KDF import scrypt
+
 from Crypto.Random import get_random_bytes
 
-class PrivateEntryObject:
-    def __init__(self):
-        pass
 
+class PrivateEntryObject:
+    def __init__(self, name: str, type: str, note: str, nonce: bytes | str | None = None, data: str | bytes | None = None):
+        self.name: str = name
+        self.type: str = type
+        
+        self.note: str  = note
+        
+        self.nonce: bytes = _type(nonce) is str and bytes.fromhex(nonce)
+        self.data: bytes = _type(data) is str and bytes.fromhex(data)
+    
+    
+    def get_decrypted_data(self, decryption_key: bytes) -> bytes:
+        return AES.new(key=decryption_key, nonce=self.nonce, mode=AES.MODE_EAX).decrypt(self.data)
+    
+    
+    def update_data(self, encryption_key: bytes, data: bytes):
+        cipher = AES.new(key=encryption_key, mode=AES.MODE_EAX)
+            
+        self.nonce = cipher.nonce
+        self.data = cipher.encrypt(data)
+        
+    
 
 class PublicEntryObject:
-    def __init__(self):
-        pass
+    def __init__(self, name: str, type: str, data: str | bytes | list | dict, note: str):
+        self.name: str = name
+        self.type: str = type
+        self.data: str | bytes | list | dict = data
+        self.note: str  = note
     
 
 class VaultObject:
     def __init__(self):
         self.private: list[PrivateEntryObject] = []
         self.public: list[PublicEntryObject] = []
+   
+    
+    def create_private_entry(
+        self,
+        encryption_key: bytes,
+        name: str,
+        type: str,
+        data: str | bytes | list | dict,
+        note: str | None = ""
+    ) -> PrivateEntryObject:
+        _prepped_data = b''
+        
+        if _type(data) is str:
+            _prepped_data = data.encode()
+        elif not _type(data) is bytes:
+            _prepped_data = json.loads(data).encode()
+        
+        new_entry = PrivateEntryObject(
+            name=name,
+            type=type,
+            note=note
+        )
+        
+        new_entry.update_data(
+            encryption_key=encryption_key, 
+            data=_prepped_data
+        )
+        
+        return new_entry
+        
+    
+    def create_public_entry(
+        self,
+        name: str,
+        type: str,
+        data: str | bytes | list | dict,
+        note: str | None = ""
+    ) -> PublicEntryObject:
+        new_entry = PublicEntryObject(
+            name=name,
+            type=type,
+            data=data,
+            note=note
+        )
+        
+        self.public.append(new_entry)
+        
+        return new_entry
 
 
 class ScryptObject:
