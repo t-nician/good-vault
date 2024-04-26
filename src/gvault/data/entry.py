@@ -70,7 +70,7 @@ class PrivateEntry:
         self.data = data
     
     
-    def to_entry_data(self, decryption_key: bytes) -> BaseEntryData:
+    def to_entry_data(self, decryption_key: bytes) -> AccountEntryData | FileEntryData | NoteEntryData:
         _data = AES.new(
             key=decryption_key, 
             nonce=self.nonce, 
@@ -105,7 +105,7 @@ class PrivateEntry:
 
 
 class PublicEntry:
-    def __init__(self, name: str, note: str, data: BaseEntryData):
+    def __init__(self, name: str, note: str, data: AccountEntryData | FileEntryData | NoteEntryData):
         self.name = name
         self.note = note
         self.data = data
