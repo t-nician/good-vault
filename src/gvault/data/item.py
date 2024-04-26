@@ -1,4 +1,4 @@
-import enum, json
+import enum, json, uuid
 
 from Crypto.Cipher import AES
 
@@ -88,6 +88,8 @@ class PrivateItem:
         
         self.is_public = False
         self.is_decrypted = type(item_data) is not EncryptedItemData
+        
+        self.uuid = uuid.uuid4().hex
     
     
     def decrypt(self, decryption_key: bytes):
@@ -155,6 +157,7 @@ class PublicItem:
         self.item_data = item_data
         
         self.is_public = True
+        self.uuid = uuid.uuid4().hex
     
     
     def to_dict(self, convert_bytes_to_hex: bool | None = False) -> dict:
