@@ -47,6 +47,7 @@ class ScryptData:
     
     def to_dict(self, convert_bytes_to_hex: bool | None = False) -> dict:
         return {
+            "type": "scrypt",
             "salt": convert_bytes_to_hex and self.salt.hex() or self.salt,
             "length": self.length,
             "N": self.N,
