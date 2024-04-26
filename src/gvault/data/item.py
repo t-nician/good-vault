@@ -75,8 +75,8 @@ class EncryptedItemData:
     
     def to_dict(self, convert_bytes_to_hex: bool | None = False) -> dict:
         return {
-            "type": str(self.real_type or self.type),
-            
+            "type": str(self.type),
+            "real_type": str(self.real_type),
             "nonce": convert_bytes_to_hex and self.nonce.hex() or self.nonce,
             "data": convert_bytes_to_hex and self.data.hex() or self.data
         }
