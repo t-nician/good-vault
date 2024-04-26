@@ -1,1 +1,1 @@
-from gvault import data, model
+from gvault import data

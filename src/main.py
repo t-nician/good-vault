@@ -1,23 +1,16 @@
-from gvault import model
-from gvault.data import account, entry, hash
+from gvault.data import item
 
-created_account = account.AccountData("password")
-
-created_account.create_private_entry(
-    name="test",
-    note="note",
-    data=entry.AccountEntryData(
-        username="username",
-        password="password",
-        website=""
+private_item = item.PrivateItem(
+    "name",
+    "note",
+    item.AccountItemData(
+        "username",
+        "password",
+        "website"
     )
 )
 
-model.save_account_data("username", created_account)
+private_item.encrypt(b"password12345678")
+private_item.decrypt(b"password12345678")
 
-retrieved_account = model.get_account_data("username")
-encryption_key = retrieved_account.hash.get_encryption_key("password")
-
-print("login success? ", retrieved_account.login("password"))
-
-print(retrieved_account.get_private_entries_by_name("test")[0].to_entry_data(encryption_key).username)
+print(private_item.item_data.username)
