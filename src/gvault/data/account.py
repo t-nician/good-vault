@@ -22,7 +22,6 @@ class AccountData:
         
         if self.authorization_key == self.hash.get_authorization_key(password):
             self.password = password
-            
             return True
 
         return False

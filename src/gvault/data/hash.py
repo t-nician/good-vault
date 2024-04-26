@@ -35,7 +35,7 @@ class ScryptHashData:
     
     
     def __generic_scrypt(self, password: str, num_keys: int = 1) -> bytes | list[bytes]:
-        return scrypt(
+        return  scrypt(
             password=password,
             salt=self.salt,
             key_len=self.length,
