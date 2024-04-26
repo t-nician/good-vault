@@ -1,5 +1,9 @@
 import enum, json
+
 from Crypto.Cipher import AES
+
+
+DEFAULT_AES_MODE = AES.MODE_EAX
 
 
 class ItemDataType(enum.StrEnum):
@@ -91,7 +95,7 @@ class PrivateItem:
             return None
 
 
-        _cipher = AES.new(key=decryption_key, nonce=self.item_data.nonce, mode=AES.MODE_EAX)
+        _cipher = AES.new(key=decryption_key, nonce=self.item_data.nonce, mode=DEFAULT_AES_MODE)
         _decrypted_data = _cipher.decrypt(self.item_data.data)
         
         _decrypted_dict = json.loads(_decrypted_data)
@@ -118,7 +122,7 @@ class PrivateItem:
             return None
         
         
-        _cipher = AES.new(key=encryption_key, mode=AES.MODE_EAX)
+        _cipher = AES.new(key=encryption_key, mode=DEFAULT_AES_MODE)
         _encrypted_data = _cipher.encrypt(
             json.dumps(self.item_data.to_dict(False)).encode()
         )
