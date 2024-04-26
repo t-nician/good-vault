@@ -17,8 +17,8 @@ public_item: item.PublicItem = new_account.create_item(
 )
 
 private_item: item.PrivateItem = new_account.create_item(
-    name="Public Item Name",
-    note="Public Item Note",
+    name="Private Item Name",
+    note="Private Item Note",
     item_data=item.NoteItemData(
         note="Hello there!"
     ),
@@ -26,10 +26,10 @@ private_item: item.PrivateItem = new_account.create_item(
     encrypt_on_create=True
 )
 
-print(private_item.item_data.data)
+print(private_item.to_dict(True))
 
 new_account.login("password12345678")
 
 private_item.decrypt(new_account.encryption_key)
 
-print(private_item.item_data.note)
+print(private_item.to_dict(True))
