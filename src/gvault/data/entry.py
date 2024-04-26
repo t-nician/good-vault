@@ -94,6 +94,14 @@ class PrivateEntry:
                 name=_data["name"],
                 data=bytes.fromhex(_data["data"])
             )
+        
+        
+        elif self.type == EntryDataType.NOTE:
+            _data = _data.decode()
+            
+            return NoteEntryData(
+                note=_data
+            )
 
 
 class PublicEntry:

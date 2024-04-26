@@ -11,6 +11,3 @@ public_entry = gvault.data.entry.PublicEntry(
 )
 
 
-private_entry = public_entry.to_private_entry(b'password12345678')
-
-print(private_entry.to_entry_data(b"password12345678").data)
