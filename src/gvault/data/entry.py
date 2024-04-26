@@ -116,6 +116,18 @@ class PrivateEntry(BaseEntry):
             return NoteEntryData(
                 note=_data
             )
+        
+        
+    def to_dict(self, hex_bytes: bool | None = False) -> dict:
+        return {
+            "name": self.name,
+            "note": self.note,
+            "type": str(self.type),
+            "nonce": hex_bytes and self.nonce.hex() or self.nonce,
+            "data": hex_bytes and self.data.hex() or self.data        
+        }
+            
+            
 
 
 class PublicEntry(BaseEntry):
@@ -139,5 +151,36 @@ class PublicEntry(BaseEntry):
             nonce=_cipher.nonce,
             data=_cipher.encrypt(_data)
         )
+    
+    
+    def to_dict(self, hex_bytes: bytes | None = False) -> dict:        
+        if self.data.type == EntryDataType.ACCOUNT:
+            return {
+                "name": self.name,
+                "note": self.note,
+                "data": {
+                    "username": self.data.username,
+                    "password": self.data.password,
+                    "website": self.data.website
+                }
+            }
+        elif self.data.type == EntryDataType.FILE:
+            return {
+                "name": self.name,
+                "note": self.note,
+                "data": {
+                    "name": self.data.name,
+                    "data": hex_bytes and self.data.data.hex() or self.data.data
+                }
+            }
+        elif self.data.type == EntryDataType.NOTE:
+            return {
+                "name": self.name,
+                "note": self.note,
+                "data": {
+                    "note": self.data.note
+                }
+            }   
+    
         
         
