@@ -2,26 +2,6 @@ import peewee, json
 
 
 database = peewee.SqliteDatabase(":memory:")
-
-
-def __dehex(target: dict):
-    for (item, value) in target.items():
-        if type(value) is str:
-            try:
-                target[item] = bytes.fromhex(value)
-            except:
-                pass
-        elif type(value) is dict:
-            __dehex(value)
-        
-        if type(item) is str:
-            try:
-                target[bytes.fromhex(item)] = value
-                del target[item]
-            except:
-                pass
-        elif type(item) is dict:
-            __dehex(item)
                 
 
 class BaseModel(peewee.Model):
@@ -32,10 +12,10 @@ class BaseModel(peewee.Model):
 class AccountModel(BaseModel):
     username = peewee.TextField(unique=True, index=True)
     
-    hash_data = peewee.TextField()
-    vault_data = peewee.TextField()
+    hash_data = peewee.TextField(default="")
+    vault_data = peewee.TextField(default="")
     
-    authorization_key = peewee.TextField()
+    authorization_key = peewee.TextField(default="")
 
 
 def get_account_model_by_username(username: str) -> AccountModel | None:
@@ -49,6 +29,15 @@ def get_account_model_by_username(username: str) -> AccountModel | None:
         pass
     
     return result
+
+
+def create_account_model(username: str) -> AccountModel | None:
+    if get_account_model_by_username(username):
+        return None
+    
+    return AccountModel.create(
+        username=username
+    )
 
 
 TARGET_TABLES = [AccountModel]
