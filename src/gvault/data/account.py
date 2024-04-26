@@ -72,7 +72,23 @@ class AccountData:
         self.private_entries.append(new_private_entry)
         
         return new_private_entry
-     
     
+    
+    def private_entries_to_dict(self) -> list[dict]:
+        entries = []
+        
+        for entry in self.private_entries:
+            entries.append(entry.to_dict())
+        
+        return entries
+    
+    
+    def public_entries_to_dict(self) -> list[dict]:
+        entries = []
+        
+        for entry in self.public_entries:
+            entries.append(entry.to_dict())
+        
+        return entries
     
     

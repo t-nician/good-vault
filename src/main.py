@@ -14,3 +14,5 @@ new_private_entry = initiated_account.create_private_entry(
         website=""
     )
 )
+
+print(initiated_account.private_entries_to_dict())
