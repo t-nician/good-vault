@@ -20,12 +20,14 @@ class AccountData:
             self.authorization_key = hash_data.get_authorization_key(password)
             self.encryption_key = hash_data.get_encryption_key(password)
             self.vault_data.set_encryption_key(self.encryption_key)
+            self.is_logged_in = True
     
     
     def login(self, password: str) -> bool:
         # May of made this a lil too rich...
         if self.hash_data.get_authorization_key(password) == self.authorization_key:
             self.encryption_key = self.hash_data.get_encryption_key(password)
+            self.vault_data.set_encryption_key(self.encryption_key)
             self.is_logged_in = True
         else:
             self.is_logged_in = False
