@@ -1,15 +1,24 @@
 from gvault.data import account, vault, item
 
-old_new_account = account.AccountData(
+new_account = account.AccountData(
     "username",
     "password12345678"
 )
 
-
-new_account = account.AccountData(
-    username="username",
-    hash_data=old_new_account.hash_data,
-    authorization_key=old_new_account.authorization_key
+public_item: item.PublicItem = new_account.create_item(
+    item_data=item.AccountItemData(
+        username="John_Doe",
+        password="password123",
+        website="cool-website.com"
+    ),
+    visibility=item.ItemVisibility.PUBLIC
 )
 
-print("login success? ", new_account.login("password12345678"))
+private_item: item.PrivateItem = new_account.create_item(
+    item_data=item.NoteItemData(
+        note="Hello there!"
+    ),
+    visibility=item.ItemVisibility.PRIVATE,
+    encrypt_on_create=True
+)
+

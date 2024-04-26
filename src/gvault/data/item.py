@@ -5,6 +5,9 @@ from Crypto.Cipher import AES
 
 DEFAULT_AES_MODE = AES.MODE_EAX
 
+class ItemVisibility(enum.StrEnum):
+    PRIVATE = "PRIVATE"
+    PUBLIC = "PUBLIC"
 
 class ItemDataType(enum.StrEnum):
     ENCRYPTED = "encrypted"
