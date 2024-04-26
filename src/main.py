@@ -1,9 +1,9 @@
 from gvault import model
 from gvault.data import account, entry, hash
 
-initiated_account = account.AccountData("password")
+created_account = account.AccountData("password")
 
-new_private_entry = initiated_account.create_private_entry(
+created_account.create_public_entry(
     name="test",
     note="note",
     data=entry.AccountEntryData(
@@ -13,4 +13,7 @@ new_private_entry = initiated_account.create_private_entry(
     )
 )
 
-model.save_account_data(initiated_account)
+print(created_account.get_entries_by_name("test"))
+model.save_account_data("username", created_account)
+
+retrieved_account = model.get_account_data("username")

@@ -158,6 +158,7 @@ class PublicEntry(BaseEntry):
             return {
                 "name": self.name,
                 "note": self.note,
+                "type": str(self.data.type),
                 "data": {
                     "username": self.data.username,
                     "password": self.data.password,
@@ -168,6 +169,7 @@ class PublicEntry(BaseEntry):
             return {
                 "name": self.name,
                 "note": self.note,
+                "type": str(self.data.type),
                 "data": {
                     "name": self.data.name,
                     "data": hex_bytes and self.data.data.hex() or self.data.data
@@ -177,6 +179,7 @@ class PublicEntry(BaseEntry):
             return {
                 "name": self.name,
                 "note": self.note,
+                "type": str(self.data.type),
                 "data": {
                     "note": self.data.note
                 }

@@ -6,13 +6,11 @@ from gvault.data import entry, hash
 
 
 class AccountData:
-    def __init__(self, password: str | None = None, salt: bytes | None = None, authorization_key: bytes | None = None):
+    def __init__(self, password: str | None = None, authorization_key: bytes | None = None, hash_data_override: hash.ScryptHashData | None = None):
         self.private_entries: list[entry.PrivateEntry] = []
         self.public_entries: list[entry.PublicEntry] = []
         
-        self.hash: hash.ScryptHashData = hash.ScryptHashData(
-            salt=salt
-        )
+        self.hash: hash.ScryptHashData = hash_data_override or hash.ScryptHashData()
         
         self.password: str | None = password
         self.authorization_key: bytes | None = authorization_key or password and self.hash.get_authorization_key(password) or None
@@ -25,6 +23,18 @@ class AccountData:
             return True
 
         return False
+    
+    
+    def get_entries_by_name(self, name: str) -> list[entry.PrivateEntry | entry.PublicEntry]:
+        return self.get_public_entries_by_name(name) + self.get_private_entries_by_name(name)
+    
+    
+    def get_public_entries_by_name(self, name: str) -> list[entry.PublicEntry]:
+        return [entry_data.name == name and entry_data or None for entry_data in self.public_entries]
+    
+    
+    def get_private_entries_by_name(self, name: str) -> list[entry.PrivateEntry]:
+        return [entry_data.name == name and entry_data or None for entry_data in self.private_entries]
     
     
     def get_entry_by_uuid(self, uuid: str) -> entry.PrivateEntry | entry.PublicEntry | None:
@@ -47,6 +57,21 @@ class AccountData:
         self.public_entries.append(new_public_entry)
         
         return new_public_entry
+
+
+    def add_existing_private_entry(self, name: str, type: entry.EntryDataType, note: str, nonce: bytes, data: bytes) -> entry.PrivateEntry:
+        new_private_entry = entry.PrivateEntry(
+            name=name,
+            type=type,
+            note=note,
+            nonce=nonce,
+            data=data
+        )
+        
+        self.private_entries.append(new_private_entry)
+        
+        return new_private_entry
+            
 
     
     def create_private_entry(self, name: str, note: str, data:  entry.AccountEntryData | entry.FileEntryData | entry.NoteEntryData, password: str | None = None) -> entry.PrivateEntry:
