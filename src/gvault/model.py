@@ -39,7 +39,7 @@ def __dehex_dict(target: dict):
             try:
                 target[item] = bytes.fromhex(value)
             except:
-                pass
+                target[item] = value
 
 
 def get_account_model_by_username(username: str) -> AccountModel | None:

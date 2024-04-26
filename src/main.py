@@ -3,7 +3,7 @@ from gvault.data import account, entry, hash
 
 created_account = account.AccountData("password")
 
-created_account.create_public_entry(
+created_account.create_private_entry(
     name="test",
     note="note",
     data=entry.AccountEntryData(
@@ -13,7 +13,10 @@ created_account.create_public_entry(
     )
 )
 
-print(created_account.get_entries_by_name("test"))
 model.save_account_data("username", created_account)
 
 retrieved_account = model.get_account_data("username")
+encryption_key = retrieved_account.hash.get_encryption_key("password")
+print("login success? ", retrieved_account.login("password"))
+
+print(retrieved_account.get_private_entries_by_name("test")[0].to_entry_data(encryption_key).username)
