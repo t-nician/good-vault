@@ -1,17 +1,21 @@
-import json, enum
+import json, enum, uuid
 
 from Crypto.Cipher import AES
 
 
 class EntryDataType(enum.StrEnum):
     ACCOUNT = "ACCOUNT"
+    PRIVATE = "PRIVATE"
+    PUBLIC = "PUBLIC"
     FILE = "FILE"
     NOTE = "NOTE"
+    
 
 
 class BaseEntryData:
     def __init__(self):
         self.type: EntryDataType
+        
         
     def to_bytes(self) -> bytes:
         return b''
@@ -60,7 +64,17 @@ class NoteEntryData:
         return self.note.encode()
 
 
-class PrivateEntry:
+class BaseEntry:
+    def __init__(self):
+        self.uuid: str
+        self.is_public: bool
+        
+        
+    def is_public_entry(self) -> bool:
+        return self.is_public
+
+
+class PrivateEntry(BaseEntry):
     def __init__(self, name: str, type: EntryDataType, note: str, nonce: bytes, data: bytes):
         self.name = name
         self.note = note
@@ -68,6 +82,9 @@ class PrivateEntry:
         
         self.nonce = nonce
         self.data = data
+        
+        self.uuid = uuid.uuid4()
+        self.is_public = False
     
     
     def to_entry_data(self, decryption_key: bytes) -> AccountEntryData | FileEntryData | NoteEntryData:
@@ -104,11 +121,14 @@ class PrivateEntry:
             )
 
 
-class PublicEntry:
+class PublicEntry(BaseEntry):
     def __init__(self, name: str, note: str, data: AccountEntryData | FileEntryData | NoteEntryData):
         self.name = name
         self.note = note
         self.data = data
+        
+        self.uuid = uuid.uuid4()
+        self.is_public = True
     
     
     def to_private_entry(self, encryption_key: bytes) -> PrivateEntry:
