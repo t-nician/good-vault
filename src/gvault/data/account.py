@@ -10,15 +10,25 @@ class AccountData:
         
         self.hash_data = hash_data
         
-        self.authorization_key = password and hash_data.get_authorization_key(password) or authorization_key
-        self.encryption_key = password and hash_data.get_encryption_key(password) or None
+        self.authorization_key = authorization_key
+        self.encryption_key: bytes | None = None
         
+        self.is_logged_in: bool = False
+        
+        if password:
+            self.authorization_key = hash_data.get_authorization_key(password)
+            self.encryption_key = hash_data.get_encryption_key(password)
+    
     
     def login(self, password: str) -> bool:
+        # May of made this a lil too rich...
         if self.hash_data.get_authorization_key(password) == self.authorization_key:
             self.encryption_key = self.hash_data.get_encryption_key(password)
-            return True
-        return False
+            self.is_logged_in = True
+        else:
+            self.is_logged_in = False
+        
+        return self.is_logged_in
             
             
         
