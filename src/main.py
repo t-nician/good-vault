@@ -1,4 +1,5 @@
 from gvault.data.entry import *
+from gvault.data.hash import *
 
 public_entry = PublicEntry(
     name="name",
@@ -10,3 +11,5 @@ public_entry = PublicEntry(
     )
 )
 
+test_hash = ScryptHashData()
+print(test_hash.get_authorization_key("password12345678"))

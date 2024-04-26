@@ -5,8 +5,6 @@ from Crypto.Cipher import AES
 
 class EntryDataType(enum.StrEnum):
     ACCOUNT = "ACCOUNT"
-    PRIVATE = "PRIVATE"
-    PUBLIC = "PUBLIC"
     FILE = "FILE"
     NOTE = "NOTE"
     
@@ -21,7 +19,7 @@ class BaseEntryData:
         return b''
 
 
-class AccountEntryData:
+class AccountEntryData(BaseEntryData):
     def __init__(self, username: str, password: str, website: str | None = ""):
         self.username = username
         self.password = password
@@ -38,7 +36,7 @@ class AccountEntryData:
         }).encode()
 
 
-class FileEntryData:
+class FileEntryData(BaseEntryData):
     def __init__(self, name: str, data: bytes):
         self.name = name
         self.data = data
@@ -53,7 +51,7 @@ class FileEntryData:
         }).encode()
 
 
-class NoteEntryData:
+class NoteEntryData(BaseEntryData):
     def __init__(self, note: str):
         self.note = note
         
