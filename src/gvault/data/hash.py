@@ -29,6 +29,10 @@ class ScryptData:
         return self.__scrypt_generic(password=password, num_keys=1)
     
     
+    def get_encryption_key(self, password: str) -> bytes:
+        return self.__scrypt_generic(password=password, num_keys=2)[1]
+    
+    
     def __scrypt_generic(self, password: str, num_keys: int | None = 1) -> bytes | list[bytes]:
         return scrypt(
             password=password,
@@ -36,5 +40,12 @@ class ScryptData:
             key_len=self.length,
             N=self.N,
             r=self.r,
-            p=self.p
+            p=self.p,
+            num_keys=num_keys
         )
+    
+    
+    def to_dict(self, convert_bytes_to_hex: bool | None = False) -> dict:
+        return {
+            
+        }
