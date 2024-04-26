@@ -3,7 +3,7 @@ import json, enum
 from Crypto.Cipher import AES
 
 
-class DataEntryType(enum.StrEnum):
+class EntryDataType(enum.StrEnum):
     ACCOUNT = "ACCOUNT"
     FILE = "FILE"
     NOTE = "NOTE"
@@ -11,7 +11,7 @@ class DataEntryType(enum.StrEnum):
 
 class BaseEntryData:
     def __init__(self):
-        self.type: DataEntryType
+        self.type: EntryDataType
         
     def to_bytes(self) -> bytes:
         return b''
@@ -23,7 +23,7 @@ class AccountEntryData:
         self.password = password
         self.website = website
         
-        self.type = DataEntryType.ACCOUNT
+        self.type = EntryDataType.ACCOUNT
 
     
     def to_bytes(self) -> bytes:
@@ -35,21 +35,25 @@ class AccountEntryData:
 
 
 class FileEntryData:
-    def __init__(self, data: bytes):
+    def __init__(self, name: str, data: bytes):
+        self.name = name
         self.data = data
         
-        self.type = DataEntryType.FILE
+        self.type = EntryDataType.FILE
     
     
     def to_bytes(self) -> bytes:
-        return self.data
+        return json.dumps({
+            "name": self.name,
+            "data": self.data.hex()
+        }).encode()
 
 
 class NoteEntryData:
     def __init__(self, note: str):
         self.note = note
         
-        self.type = DataEntryType.NOTE
+        self.type = EntryDataType.NOTE
     
     
     def to_bytes(self) -> bytes:
@@ -57,7 +61,7 @@ class NoteEntryData:
 
 
 class PrivateEntry:
-    def __init__(self, name: str, type: DataEntryType, note: str, nonce: bytes, data: bytes):
+    def __init__(self, name: str, type: EntryDataType, note: str, nonce: bytes, data: bytes):
         self.name = name
         self.note = note
         self.type = type
@@ -74,13 +78,21 @@ class PrivateEntry:
         ).decrypt(self.data)
         
         
-        if self.type == DataEntryType.ACCOUNT:
+        if self.type == EntryDataType.ACCOUNT:
             _data = json.loads(_data)
             
             return AccountEntryData(
                 username=_data["username"],
                 password=_data["password"],
                 website=_data["website"]
+            )
+        
+        elif self.type == EntryDataType.FILE:
+            _data = json.loads(_data)
+            
+            return FileEntryData(
+                name=_data["name"],
+                data=bytes.fromhex(_data["data"])
             )
 
 
