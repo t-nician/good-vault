@@ -30,4 +30,6 @@ private_item: item.PrivateItem = new_account.create_item(
 
 gvault.save_account_data_to_database(new_account)
 
-gvault.get_account_data_from_database("username")
+retrieved_account = gvault.get_account_data_from_database("username")
+retrieved_account.login("password12345678")
+

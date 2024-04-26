@@ -37,8 +37,9 @@ class AccountData:
     
     def create_item(self, name: str, note: str, item_data: item.EncryptedItemData | item.AccountItemData | item.FileItemData | item.NoteItemData, visibility: item.ItemVisibility, encrypt_on_create: bool | None = False) -> item.PrivateItem | item.PublicItem:
         if visibility is item.ItemVisibility.PRIVATE:
-            if not self.is_logged_in:
+            if encrypt_on_create and not self.is_logged_in:
                 raise Exception("You must use AccountData.login(password) before creating a PrivateItem!")
+            
             return self.vault_data.create_private_item(
                 name=name,
                 note=note,

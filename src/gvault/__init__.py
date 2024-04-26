@@ -29,7 +29,7 @@ def get_account_data_from_database(username: str, password: str | None = None, d
     if account_model:
         vault_data_dict = json.loads(account_model.vault_data)
         hash_data_dict = json.loads(account_model.hash_data)
-        
+
         hash_data = None
         
         private_data = vault_data_dict["private"]
@@ -54,25 +54,57 @@ def get_account_data_from_database(username: str, password: str | None = None, d
         )
         
         for private_item in private_data:
+            __dehex(private_item)
+            
             _type = data.item.ItemDataType(private_item["data"]["type"])
+            _real_type = data.item.ItemDataType(private_item["data"]["real_type"])
+            
             _item_data = None
             
-            print(_type, private_item)
-            
             del private_item["data"]["type"]
+            del private_item["data"]["real_type"]
             
             if _type is data.item.ItemDataType.ENCRYPTED:
-                _item_data = data.item.EncryptedItemData(**private_item["data"])
+                _item_data = data.item.EncryptedItemData(**private_item["data"], real_type=_real_type)
             elif _type is data.item.ItemDataType.ACCOUNT:
                 _item_data = data.item.AccountItemData(**private_item["data"])
             elif _type is data.item.ItemDataType.FILE:
-                _item_data = data.item.FileItemData(**private_data)
+                _item_data = data.item.FileItemData(**private_data["data"])
             elif _type is data.item.ItemDataType.NOTE:
-                _item_data = data.item.NoteItemData(**private_item)
+                _item_data = data.item.NoteItemData(**private_item["data"])
             
             account_data.create_item(
-                name=pri
+                name=private_item["name"],
+                note=private_item["note"],
+                item_data=_item_data,
+                visibility=data.item.ItemVisibility.PRIVATE,
+                encrypt_on_create=False
             )
+
+        for public_item in public_data:
+            __dehex(public_item)
+            
+            _type = data.item.ItemDataType(public_item["data"]["type"])
+            
+            _item_data = None
+            
+            del public_item["data"]["type"]
+            
+            if _type is data.item.ItemDataType.ACCOUNT:
+                _item_data = data.item.AccountItemData(**public_item["data"])
+            elif _type is data.item.ItemDataType.FILE:
+                _item_data = data.item.FileItemData(**public_item["data"])
+            elif _type is data.item.ItemDataType.NOTE:
+                _item_data = data.item.NoteItemData(**public_item["data"])
+                
+            account_data.create_item(
+                name=public_item["name"],
+                note=public_item["note"],
+                item_data=_item_data,
+                visibility=data.item.ItemVisibility.PUBLIC
+            )
+            
+        return account_data
         
 
 def save_account_data_to_database(account_data: data.account.AccountData):
