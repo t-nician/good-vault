@@ -34,6 +34,16 @@ class ScryptHashData:
         return self.__generic_scrypt(password, 2)[1]
     
     
+    def to_dict(self, hex_bytes: bool | None = False) -> dict:
+        return {
+            "salt": hex_bytes and self.salt.hex() or self.salt,
+            "length": self.length,
+            "N": self.N,
+            "r": self.r,
+            "p": self.p
+        }
+    
+    
     def __generic_scrypt(self, password: str, num_keys: int = 1) -> bytes | list[bytes]:
         return  scrypt(
             password=password,

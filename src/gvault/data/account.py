@@ -74,21 +74,11 @@ class AccountData:
         return new_private_entry
     
     
-    def private_entries_to_dict(self) -> list[dict]:
-        entries = []
-        
-        for entry in self.private_entries:
-            entries.append(entry.to_dict())
-        
-        return entries
+    def private_entries_to_dict(self, hex_bytes: bool | None = False) -> list[dict]:
+        return [entry.to_dict(hex_bytes) for entry in self.private_entries]
     
     
-    def public_entries_to_dict(self) -> list[dict]:
-        entries = []
-        
-        for entry in self.public_entries:
-            entries.append(entry.to_dict())
-        
-        return entries
+    def public_entries_to_dict(self, hex_bytes: bool | None = False) -> list[dict]:
+        return [entry.to_dict(hex_bytes) for entry in self.public_entries]
     
     
