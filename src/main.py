@@ -1,15 +1,16 @@
-from gvault.data.entry import *
-from gvault.data.hash import *
+from gvault.data import account, entry, hash
 
-public_entry = PublicEntry(
-    name="name",
+initiated_account = account.AccountData("password")
+replicated_account = account.AccountData(salt=initiated_account.hash.salt, authorization_key=initiated_account.authorization_key)
+
+print(replicated_account.login("password"))
+
+new_private_entry = initiated_account.create_private_entry(
+    name="test",
     note="note",
-    data=AccountEntryData(
+    data=entry.AccountEntryData(
         username="username",
         password="password",
-        website="website"
+        website=""
     )
 )
-
-test_hash = ScryptHashData()
-print(test_hash.get_authorization_key("password12345678"))

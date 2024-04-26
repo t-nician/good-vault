@@ -7,7 +7,6 @@ class EntryDataType(enum.StrEnum):
     ACCOUNT = "ACCOUNT"
     FILE = "FILE"
     NOTE = "NOTE"
-    
 
 
 class BaseEntryData:
