@@ -112,3 +112,30 @@ class VaultData:
         self.public_items.append(new_public_item)
         
         return new_public_item
+    
+    
+    def to_dict(
+        self, 
+        bytes_to_hex: bool | None = False, 
+        encrypt_private_items: bool | None = True
+    ) -> dict:
+        if encrypt_private_items:
+            if self.vault_key is None:
+                raise Exception(
+                    "Cannot convert VaultData to dict without vault_key"
+                    + " when encrypt_private_items is True!"
+                )
+                
+            for private_item in self.private_items:
+                if type(private_item) is not item.EncryptedItemData:
+                    private_item.encrypt(self.vault_key)
+        
+        return {
+            "private_items": [
+                item.to_dict(bytes_to_hex) for item in self.private_items
+            ],
+            "public_items": [
+                item.to_dict(bytes_to_hex) for item in self.public_items
+            ]
+        }
+        
