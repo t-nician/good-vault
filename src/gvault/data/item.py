@@ -78,8 +78,7 @@ class FileItemData:
 
 
 def unpack_dict_to_item_data(
-    type: ItemDataType, 
-    data: dict
+    type: ItemDataType, data: dict
 ) -> EncryptedItemData | AccountItemData | MessageItemData | FileItemData:
     if type is ItemDataType.ENCRYPTED:
         return EncryptedItemData(**data)
