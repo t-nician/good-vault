@@ -2,7 +2,6 @@ from Crypto.Protocol.KDF import scrypt
 
 from Crypto.Random import get_random_bytes
 
-
 DEFAULT_SCRYPT_LENGTH = 32
 DEFAULT_SCRYPT_N = 16384
 DEFAULT_SCRYPT_R = 8
