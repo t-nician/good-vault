@@ -39,7 +39,7 @@ class AccountItemData:
         self.website = website
     
     
-    def to_dict(self, bytes_to_hex: bool | None = False):
+    def to_dict(self, bytes_to_hex: bool | None = False) -> dict:
         return {
             "username": self.username,
             "password": self.password,
@@ -55,7 +55,7 @@ class MessageItemData:
         self.message = message
         
     
-    def to_dict(self, bytes_to_hex: bool | None = False):
+    def to_dict(self, bytes_to_hex: bool | None = False) -> dict:
         return {
             "name": self.name,
             "message": self.message
@@ -93,15 +93,18 @@ def unpack_dict_to_item_data(
 
 class PrivateItem:
     def __init__(
-        self, item_data: EncryptedItemData 
-                            | AccountItemData 
-                            | MessageItemData 
-                            | FileItemData,
+        self, item_name: str, item_note: str, item_data: EncryptedItemData 
+                                                            | AccountItemData 
+                                                            | MessageItemData 
+                                                            | FileItemData,
         encrypt_on_create: bool | None = False,
         decrypt_on_create: bool | None = False,
         key: bytes | None = None
     ):
         self.item_scope = ItemScopeType.PRIVATE
+        
+        self.item_name = item_name
+        self.item_note = item_note
         
         self.item_data = item_data
         
@@ -118,6 +121,15 @@ class PrivateItem:
                 self.encrypt(key)
             elif decrypt_on_create:
                 self.decrypt(key)
+    
+    def to_dict(self, bytes_to_hex: bool | None = False) -> dict:
+        return {
+            "name": self.item_name,
+            "note": self.item_note,
+            "type": str(self.item_data.type),
+            
+            "data": self.item_data.to_dict(bytes_to_hex)
+        }
 
     
     def decrypt(self, decryption_key: bytes):
@@ -140,17 +152,14 @@ class PrivateItem:
     def encrypt(self, encryption_key: bytes):
         if type(self.item_data) is not EncryptedItemData:
             cipher = AES.new(key=encryption_key, mode=AES.MODE_EAX)
-            
-            data = cipher.encrypt(
-                json.dumps(self.item_data.to_dict(bytes_to_hex=True))
-            )
-            
-            nonce = cipher.nonce
-            
             self.item_data = EncryptedItemData(
                 type=self.item_data.type,
-                nonce=nonce,
-                data=data
+                nonce=cipher.nonce,
+                data=cipher.encrypt(
+                    json.dumps(
+                        self.item_data.to_dict(bytes_to_hex=True)
+                    ).encode()
+                )
             )
         else:
             raise Exception("Can't encrypt an already encrypted item!")
@@ -158,9 +167,22 @@ class PrivateItem:
 
 class PublicItem:
     def __init__(
-        self, item_data: AccountItemData | MessageItemData | FileItemData
+        self, item_name: str, item_note: str, item_data: AccountItemData 
+                                                            | MessageItemData 
+                                                            | FileItemData
     ):
         self.scope = ItemScopeType.PUBLIC
         
-        self.item_data = item_data
+        self.item_name = item_name
+        self.item_note = item_note
         
+        self.item_data = item_data
+    
+    def to_dict(self, bytes_to_hex: bool | None = False) -> dict:
+        return {
+            "name": self.item_name,
+            "note": self.item_note,
+            "type": str(self.item_data.type),
+            
+            "data": self.item_data.to_dict(bytes_to_hex)
+        }
