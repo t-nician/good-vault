@@ -82,6 +82,17 @@ class EncryptedItemData:
         }
 
 
+def create_item_data_by_type(type: ItemDataType, data, real_type: ItemDataType | None = None) -> EncryptedItemData | AccountItemData | FileItemData | NoteItemData:
+    if type is ItemDataType.ENCRYPTED:
+        return EncryptedItemData(**data, real_type=real_type)
+    elif type is ItemDataType.ACCOUNT:
+        return AccountItemData(**data)
+    elif type is ItemDataType.FILE:
+        return FileItemData(**data)
+    elif type is ItemDataType.NOTE:
+        return NoteItemData(**data)
+
+
 class PrivateItem:
     def __init__(self, name: str, note: str, item_data: EncryptedItemData | AccountItemData | FileItemData | NoteItemData):
         self.name = name
@@ -99,7 +110,6 @@ class PrivateItem:
         if self.is_decrypted:
             return None
 
-
         _cipher = AES.new(key=decryption_key, nonce=self.item_data.nonce, mode=DEFAULT_AES_MODE)
         _decrypted_data = _cipher.decrypt(self.item_data.data)
         
@@ -108,18 +118,10 @@ class PrivateItem:
         
         del _decrypted_dict["type"]
         
-        if _item_data_type is ItemDataType.ACCOUNT:
-            self.item_data = AccountItemData(
-                **_decrypted_dict
-            )
-        elif _item_data_type is ItemDataType.FILE:
-            self.item_data = FileItemData(
-                **_decrypted_dict
-            )
-        elif _item_data_type is ItemDataType.NOTE:
-            self.item_data = NoteItemData(
-                **_decrypted_dict
-            )
+        self.item_data = create_item_data_by_type(
+            type=_item_data_type,
+            data=_decrypted_dict
+        )
         
     
     def encrypt(self, encryption_key: bytes):

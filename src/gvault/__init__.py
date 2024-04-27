@@ -64,14 +64,11 @@ def get_account_data_from_database(username: str, password: str | None = None, d
             del private_item["data"]["type"]
             del private_item["data"]["real_type"]
             
-            if _type is data.item.ItemDataType.ENCRYPTED:
-                _item_data = data.item.EncryptedItemData(**private_item["data"], real_type=_real_type)
-            elif _type is data.item.ItemDataType.ACCOUNT:
-                _item_data = data.item.AccountItemData(**private_item["data"])
-            elif _type is data.item.ItemDataType.FILE:
-                _item_data = data.item.FileItemData(**private_data["data"])
-            elif _type is data.item.ItemDataType.NOTE:
-                _item_data = data.item.NoteItemData(**private_item["data"])
+            _item_data = data.item.create_item_data_by_type(
+                type=_type,
+                data=private_item["data"],
+                real_type=_real_type
+            )
             
             account_data.create_item(
                 name=private_item["name"],
@@ -87,19 +84,15 @@ def get_account_data_from_database(username: str, password: str | None = None, d
             
             _type = data.item.ItemDataType(public_item["data"]["type"])
             
-            _item_data = None
-            
             del public_item["data"]["type"]
             
-            if _type is data.item.ItemDataType.ACCOUNT:
-                _item_data = data.item.AccountItemData(**public_item["data"])
-            elif _type is data.item.ItemDataType.FILE:
-                _item_data = data.item.FileItemData(**public_item["data"])
-            elif _type is data.item.ItemDataType.NOTE:
-                _item_data = data.item.NoteItemData(**public_item["data"])
+            _item_data = data.item.create_item_data_by_type(
+                type=_type,
+                data=private_item["data"]
+            )
                 
             account_data.create_item(
-                name=public_item["name"],
+                name=public_item["name"],   
                 note=public_item["note"],
                 item_data=_item_data,
                 visibility=data.item.ItemVisibility.PUBLIC
