@@ -19,6 +19,12 @@ private_item = vault.create_private_item(
 
 print(private_item.to_dict(True))
 
-private_item.decrypt(vault.vault_key)
+public_item = vault.convert_private_item_to_public(private_item)
+re_private_item = vault.convert_public_item_to_private(
+    public_item, 
+    True
+)
 
-print(private_item.to_dict(False))
+print(re_private_item.to_dict(True))
+
+
