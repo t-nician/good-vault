@@ -81,6 +81,7 @@ def get_account_data_from_database(username: str, password: str | None = None, d
                 encrypt_on_create=False
             )
 
+
         for public_item in public_data:
             __dehex(public_item)
             
