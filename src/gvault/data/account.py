@@ -60,4 +60,25 @@ class AccountData:
             return True
         
         return False
+    
+    
+    def to_dict(
+        self, 
+        bytes_to_hex: bool | None = False, 
+        encrypt_private_items: bool | None = True
+    ) -> dict:
+        return {
+            "username": self.account_username,
+            
+            "authorization_key": bytes_to_hex 
+                                and self.authorization_key.hex()
+                                or self.authorization_key,
+            
+            "hash": self.hash_data.to_dict(bytes_to_hex=bytes_to_hex),
+            "vault": self.vault_data.to_dict(
+                bytes_to_hex=bytes_to_hex,
+                encrypt_private_items=encrypt_private_items
+            ),
+            
+        }
         
