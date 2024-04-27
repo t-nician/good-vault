@@ -18,3 +18,7 @@ private_item = vault.create_private_item(
 )
 
 print(private_item.to_dict(True))
+
+private_item.decrypt(vault.vault_key)
+
+print(private_item.to_dict(False))

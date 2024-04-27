@@ -134,11 +134,11 @@ class PrivateItem:
     def decrypt(self, decryption_key: bytes):
         if type(self.item_data) is EncryptedItemData:
             _type = self.item_data.type
-            _data = AES.new(
+            _data = json.loads(AES.new(
                 key=decryption_key, 
                 nonce=self.item_data.nonce, 
                 mode=AES.MODE_EAX
-            )
+            ).decrypt(self.item_data.data))
             
             self.item_data = unpack_dict_to_item_data(
                 type=_type,
