@@ -3,8 +3,8 @@ from gvault.data import item
 
 class VaultData:
     def __init__(
-        self, 
-        vault_key: bytes,
+        self,
+        vault_key: bytes | None = None,
     ):
         self.private_items: list[item.PrivateItem] = []
         self.public_items: list[item.PublicItem] = []
@@ -52,7 +52,7 @@ class VaultData:
             item_data=item_data,
             encrypt_on_create=encrypt_on_create,
             decrypt_on_create=decrypt_on_create,
-            key=key
+            key=key or self.vault_key
         )
         
         self.private_items.append(new_private_item)
