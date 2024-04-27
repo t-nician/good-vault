@@ -11,8 +11,10 @@ DEFAULT_SCRYPT_P = 1
 class ScryptHashData:
     def __init__(
         self, 
-        salt: bytes | None = None, length: int | None = DEFAULT_SCRYPT_LENGTH,
-        N: int | None = DEFAULT_SCRYPT_N, r: int | None = DEFAULT_SCRYPT_R,
+        salt: bytes | None = None, 
+        length: int | None = DEFAULT_SCRYPT_LENGTH,
+        N: int | None = DEFAULT_SCRYPT_N, 
+        r: int | None = DEFAULT_SCRYPT_R,
         p: int | None = DEFAULT_SCRYPT_P
     ):
         self.salt = salt or get_random_bytes(length)
@@ -47,7 +49,8 @@ class ScryptHashData:
     
     
     def __scrypt(
-        self, password: str, num_keys: int | None = 1
+        self, password: str, 
+        num_keys: int | None = 1
     ) -> bytes | list[bytes]:
         return scrypt(
             password=password,
