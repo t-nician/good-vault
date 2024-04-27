@@ -121,6 +121,7 @@ class PrivateItem:
             elif decrypt_on_create:
                 self.decrypt(key)
     
+    
     def to_dict(self, bytes_to_hex: bool | None = False) -> dict:
         return {
             "name": self.item_name,
@@ -176,6 +177,7 @@ class PublicItem:
         self.item_note = item_note
         
         self.item_data = item_data
+    
     
     def to_dict(self, bytes_to_hex: bool | None = False) -> dict:
         return {

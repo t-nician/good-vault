@@ -94,7 +94,6 @@ class VaultData:
         self.private_items.append(new_private_item)
         
         return new_private_item
-            
     
     
     def convert_private_item_to_public(
