@@ -3,7 +3,8 @@ from gvault.data import vault, item, hash
 
 class AccountData:
     def __init__(
-        self, account_username: str, 
+        self, account_username: str,
+        account_email: str | None = "",
         account_password: str | None = None,
         authorization_key: bytes | None = None,
         hash_data: hash.ScryptHashData | None = None,
@@ -11,6 +12,7 @@ class AccountData:
         
         self.account_username = account_username
         self.account_password = account_password
+        self.account_email = account_email
         
         self.authorization_key = authorization_key
         
@@ -67,18 +69,21 @@ class AccountData:
         bytes_to_hex: bool | None = False, 
         encrypt_private_items: bool | None = True
     ) -> dict:
+        vault = self.vault_data.to_dict(
+            bytes_to_hex=bytes_to_hex,
+            encrypt_private_items=encrypt_private_items
+        )
         return {
             "username": self.account_username,
+            "email": self.account_email,
             
             "authorization_key": bytes_to_hex 
                                 and self.authorization_key.hex()
                                 or self.authorization_key,
             
             "hash": self.hash_data.to_dict(bytes_to_hex=bytes_to_hex),
-            "vault": self.vault_data.to_dict(
-                bytes_to_hex=bytes_to_hex,
-                encrypt_private_items=encrypt_private_items
-            ),
             
+            "public": vault["public_items"],
+            "private": vault["private_items"]
         }
         

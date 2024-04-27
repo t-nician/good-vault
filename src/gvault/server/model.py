@@ -10,17 +10,12 @@ class BaseModel(peewee.Model):
     
 
 class AccountModel(BaseModel):
-    username = peewee.TextField(unique=True, index=True)
+    username = peewee.TextField(unique=True, index=True, primary_key=True)
     
     email = peewee.TextField(default="")
     authorization_key = peewee.TextField(default="")
     
     hash = peewee.TextField(default="")
-    vault_id = peewee.TextField(default="")
-
-
-class VaultModel(BaseModel):
-    id = peewee.TextField(unique=True, index=True)
     
     private = peewee.TextField(default="")
     public = peewee.TextField(default="")
@@ -39,20 +34,7 @@ def try_get_account_model_by_username(username: str) -> AccountModel | None:
     return result
 
 
-def try_get_vault_model_by_id(id: str) -> VaultModel | None:
-    result = None
-    
-    try:
-        result = VaultModel.get(
-            VaultModel.id == id
-        )
-    except:
-        pass
-    
-    return result
-
-
-TARGET_MODELS = [AccountModel, VaultModel]
+TARGET_MODELS = [AccountModel]
 
 
 for model in TARGET_MODELS:
