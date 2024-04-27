@@ -1,5 +1,6 @@
 import enum
 import json
+import uuid
 
 from Crypto.Cipher import AES
 
@@ -96,11 +97,14 @@ class PrivateItem:
                                                             | AccountItemData 
                                                             | MessageItemData 
                                                             | FileItemData,
+        item_uuid: str | None = None,
         encrypt_on_create: bool | None = False,
         decrypt_on_create: bool | None = False,
         key: bytes | None = None
     ):
         self.item_scope = ItemScopeType.PRIVATE
+        
+        self.item_uuid = item_uuid or uuid.uuid4().hex
         
         self.item_name = item_name
         self.item_note = item_note
@@ -126,6 +130,7 @@ class PrivateItem:
         return {
             "name": self.item_name,
             "note": self.item_note,
+            "uuid": self.item_uuid,
             "type": str(self.item_data.type),
             
             "data": self.item_data.to_dict(bytes_to_hex)
@@ -169,9 +174,12 @@ class PublicItem:
     def __init__(
         self, item_name: str, item_note: str, item_data: AccountItemData 
                                                             | MessageItemData 
-                                                            | FileItemData
+                                                            | FileItemData,
+        item_uuid: str | None = None
     ):
-        self.scope = ItemScopeType.PUBLIC
+        self.item_scope = ItemScopeType.PUBLIC
+        
+        self.item_uuid = item_uuid or uuid.uuid4().hex
         
         self.item_name = item_name
         self.item_note = item_note
@@ -183,6 +191,7 @@ class PublicItem:
         return {
             "name": self.item_name,
             "note": self.item_note,
+            "uuid": self.item_uuid,
             "type": str(self.item_data.type),
             
             "data": self.item_data.to_dict(bytes_to_hex)
