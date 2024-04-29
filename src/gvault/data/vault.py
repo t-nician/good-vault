@@ -22,7 +22,7 @@ class VaultData(tool.DataToDictHandler):
     
     key_check_nonce:\n       save: True
     
-    vault_key:\n       save: False
+    __vault_key:\n       save: False
     """
     encrypted_entries: list[entry.EncryptedEntryData] = dataclasses.field(
         metadata={"save": True},
@@ -80,3 +80,5 @@ class VaultData(tool.DataToDictHandler):
             return True
         
         return False
+
+    
