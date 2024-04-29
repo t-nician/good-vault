@@ -113,4 +113,7 @@ class EncryptedEntryData(BaseEntryData):
         default=b""
     )
 
-    
+
+@dataclasses.dataclass
+class EncryptedEntry(tool.DataToDictHandler):
+    pass
