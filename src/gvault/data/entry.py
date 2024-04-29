@@ -23,7 +23,6 @@ class BaseEntryData:
         default=EntryDataType.NONE
     )
 
-
     def to_dict(self, bytes_to_hex: bool | None = False) -> dict:
         __self_dict = dataclasses.asdict(self)
         __self_fields = dataclasses.fields(self)
@@ -44,6 +43,14 @@ class BaseEntryData:
 
 @dataclasses.dataclass
 class AccountEntryData(BaseEntryData):
+    """AccountEntryData
+
+    account_username:\n      save: True, encrypt: False
+    
+    account_password:\n      save: True, encrypt: True
+    
+    account_website:\n      save: True, encrypt: False
+    """
     account_username: str = dataclasses.field(
         metadata={"save": True, "encrypt": False},
         default=""
@@ -62,6 +69,12 @@ class AccountEntryData(BaseEntryData):
     
 @dataclasses.dataclass
 class FileEntryData(BaseEntryData):
+    """FileEntryData
+
+    file_name:\n        save: True, encrypt: False
+    
+    file_data:\n        save: True, encrypt: True
+    """
     file_name: str = dataclasses.field(
         metadata={"save": True, "encrypt": False},
         default=""
@@ -75,6 +88,12 @@ class FileEntryData(BaseEntryData):
 
 @dataclasses.dataclass
 class NoteEntryData(BaseEntryData):
+    """NoteEntryData
+
+    note_name:\n        save: True, encrypt: False
+    
+    note_content:\n        save: True, encrypt: True
+    """
     note_name: str = dataclasses.field(
         metadata={"save": True, "encrypt": False},
         default=""
@@ -88,4 +107,17 @@ class NoteEntryData(BaseEntryData):
 
 @dataclasses.dataclass
 class EncryptedEntryData(BaseEntryData):
-    pass
+    """FileEntryData
+
+    encryption_nonce:\n        save: True, encrypt: False
+    
+    encrypted_data:\n        save: True, encrypt: False
+    """
+    encryption_nonce: bytes = dataclasses.field(
+        metadata={"save": True, "encrypt": False},
+        default=""
+    )
+    
+    encrypted_data: bytes = dataclasses.field(
+        metadata={"save": True, "encrypt": False}
+    )
