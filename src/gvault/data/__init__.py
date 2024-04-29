@@ -1,3 +1,3 @@
 #from gvault.data import item, hash, vault, account
 
-from gvault.data import entry
+from gvault.data import vault, entry
