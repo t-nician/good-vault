@@ -11,14 +11,19 @@ class EntryDataType(enum.StrEnum):
     """
     ENCRYPTED = "encrypted"
     ACCOUNT = "account"
+    FILE = "file"
     NOTE = "note"
     NONE = "none"
 
 
 @dataclasses.dataclass
 class BaseEntryData(tool.DataToDictHandler):
-    """
-        Core data for all EntryData.
+    """Core data for all EntryData.
+    
+    entry_type:\n       save: True, encrypt: False
+    
+    entry_uuid:\n       save: True, encrypt: False
+    
     """
     entry_type: EntryDataType = dataclasses.field(
         metadata={"save": True, "encrypt": False},
@@ -27,7 +32,7 @@ class BaseEntryData(tool.DataToDictHandler):
     
     entry_uuid: str = dataclasses.field(
         metadata={"save": True, "encrypt": False},
-        default_factory=uuid.uuid4
+        default_factory=lambda: uuid.uuid4().hex
     )
 
 
@@ -40,6 +45,10 @@ class AccountEntryData(BaseEntryData):
     account_password:\n      save: True, encrypt: True
     
     account_website:\n      save: True, encrypt: False
+    
+    entry_type:\n       save: True, encrypt: False
+    
+    entry_uuid:\n       save: True, encrypt: False
     """
     account_username: str = dataclasses.field(
         metadata={"save": True, "encrypt": False},
@@ -56,6 +65,11 @@ class AccountEntryData(BaseEntryData):
         default=""
     )
     
+    entry_type: EntryDataType = dataclasses.field(
+        metadata={"save": True, "encrypt": False},
+        default=EntryDataType.ACCOUNT
+    )
+    
     
 @dataclasses.dataclass
 class FileEntryData(BaseEntryData):
@@ -64,6 +78,10 @@ class FileEntryData(BaseEntryData):
     file_name:\n        save: True, encrypt: False
     
     file_data:\n        save: True, encrypt: True
+    
+    entry_type:\n       save: True, encrypt: False
+    
+    entry_uuid:\n       save: True, encrypt: False
     """
     file_name: str = dataclasses.field(
         metadata={"save": True, "encrypt": False},
@@ -74,6 +92,11 @@ class FileEntryData(BaseEntryData):
         metadata={"save": True, "encrypt": True},
         default=b""
     )
+    
+    entry_type: EntryDataType = dataclasses.field(
+        metadata={"save": True, "encrypt": False},
+        default=EntryDataType.FILE
+    )
 
 
 @dataclasses.dataclass
@@ -83,6 +106,10 @@ class NoteEntryData(BaseEntryData):
     note_name:\n        save: True, encrypt: False
     
     note_content:\n        save: True, encrypt: True
+    
+    entry_type:\n       save: True, encrypt: False
+    
+    entry_uuid:\n       save: True, encrypt: False
     """
     note_name: str = dataclasses.field(
         metadata={"save": True, "encrypt": False},
@@ -93,6 +120,11 @@ class NoteEntryData(BaseEntryData):
         metadata={"save": True, "encrypt": True},
         default=""
     )
+    
+    entry_type: EntryDataType = dataclasses.field(
+        metadata={"save": True, "encrypt": False},
+        default=EntryDataType.NOTE
+    )
 
 
 @dataclasses.dataclass
@@ -102,6 +134,12 @@ class EncryptedEntryData(BaseEntryData):
     encryption_nonce:\n        save: True, encrypt: False
     
     encrypted_data:\n        save: True, encrypt: False
+    
+    decrypted_data:\n        save: True, encrypt: False
+    
+    entry_type:\n       save: True, encrypt: False
+    
+    entry_uuid:\n       save: True, encrypt: False
     """
     encryption_nonce: bytes = dataclasses.field(
         metadata={"save": True, "encrypt": False},
@@ -112,8 +150,13 @@ class EncryptedEntryData(BaseEntryData):
         metadata={"save": True, "encrypt": False},
         default=b""
     )
-
-
-@dataclasses.dataclass
-class EncryptedEntry(tool.DataToDictHandler):
-    pass
+    
+    decrypted_data: dict = dataclasses.field(
+        metadata={"save": True, "encrypt": False},
+        default_factory=dict
+    )
+    
+    entry_type: EntryDataType = dataclasses.field(
+        metadata={"save": True, "encrypt": False},
+        default=EntryDataType.ENCRYPTED
+    )

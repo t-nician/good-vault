@@ -11,6 +11,30 @@ DEFAULT_KEY_CHECK_DATA = b"success"
 
 
 @dataclasses.dataclass
+class VaultEntry(tool.DataToDictHandler):
+    entry_data: entry.BaseEntryData = dataclasses.field(
+        metadata={"save": True},
+        default_factory=entry.BaseEntryData
+    )
+    
+    #encrypted_entry_data: list[entry.AccountEntryData] = dataclasses.field(
+    #    metadata={"save": True}
+    #)
+    
+    
+    def encrypt_entry_data(self, key: bytes):
+        result = self.entry_data.to_encrypt_and_not_encrypt_dicts(
+            bytes_to_hex=True
+        )
+        
+        encrypt_dict = result[0]
+        decrypt_dict = result[1]
+        
+        print(encrypt_dict)
+        print(decrypt_dict)
+
+
+@dataclasses.dataclass
 class VaultData(tool.DataToDictHandler):
     """VaultData
 
@@ -80,6 +104,4 @@ class VaultData(tool.DataToDictHandler):
             return True
         
         return False
-
-    
     
