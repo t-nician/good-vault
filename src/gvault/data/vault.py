@@ -1,3 +1,4 @@
+import json
 import dataclasses
 
 from gvault import tool
@@ -11,18 +12,18 @@ DEFAULT_KEY_CHECK_DATA = b"success"
 
 
 @dataclasses.dataclass
-class VaultEntry(tool.DataToDictHandler):
-    entry_data: entry.BaseEntryData = dataclasses.field(
+class VaultEntryData(tool.DataToDictHandler):
+    entry_data: entry.BaseEntryData | entry.EncryptedEntryData | entry.AccountEntryData | entry.FileEntryData | entry.NoteEntryData = dataclasses.field(
         metadata={"save": True},
         default_factory=entry.BaseEntryData
     )
     
-    #encrypted_entry_data: list[entry.AccountEntryData] = dataclasses.field(
-    #    metadata={"save": True}
-    #)
-    
-    
     def encrypt_entry_data(self, key: bytes):
+        if type(self.entry_data) is entry.EncryptedEntryData:
+            raise Exception("Cannot encrypt an already encrypted entry!")
+        
+        cipher = AES.new(key=key, mode=AES.MODE_EAX)
+        
         result = self.entry_data.to_encrypt_and_not_encrypt_dicts(
             bytes_to_hex=True
         )
@@ -30,8 +31,31 @@ class VaultEntry(tool.DataToDictHandler):
         encrypt_dict = result[0]
         decrypt_dict = result[1]
         
-        print(encrypt_dict)
-        print(decrypt_dict)
+        encrypted_data = cipher.encrypt(json.dumps(encrypt_dict).encode())
+        
+        encrypted_entry_data = entry.EncryptedEntryData(
+            encrypted_type=self.entry_data.entry_type,
+            
+            encryption_nonce=cipher.nonce,
+            encrypted_data=encrypted_data,
+            
+            decrypted_data=decrypt_dict,
+        )
+        
+        self.entry_data = encrypted_entry_data
+    
+    
+    def decrypt_entry_data(self, key: bytes):
+        if type(self.entry_data) is not entry.EncryptedEntryData:
+            raise Exception("Entry data is already decrypted!")
+
+        cipher = AES.new(
+            key=key, 
+            nonce=self.entry_data.encryption_nonce,
+            mode=AES.MODE_EAX
+        )
+        
+        
 
 
 @dataclasses.dataclass

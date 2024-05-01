@@ -131,6 +131,8 @@ class NoteEntryData(BaseEntryData):
 class EncryptedEntryData(BaseEntryData):
     """FileEntryData
 
+    encrypted_type:\n       save: True, encrypt: False
+
     encryption_nonce:\n        save: True, encrypt: False
     
     encrypted_data:\n        save: True, encrypt: False
@@ -141,6 +143,11 @@ class EncryptedEntryData(BaseEntryData):
     
     entry_uuid:\n       save: True, encrypt: False
     """
+    encrypted_type: EntryDataType = dataclasses.field(
+        metadata={"save": True, "encrypt": False},
+        default=EntryDataType.NONE
+    )
+    
     encryption_nonce: bytes = dataclasses.field(
         metadata={"save": True, "encrypt": False},
         default=""
@@ -160,3 +167,22 @@ class EncryptedEntryData(BaseEntryData):
         metadata={"save": True, "encrypt": False},
         default=EntryDataType.ENCRYPTED
     )
+
+
+def get_entry_data_class_by_type(
+    type: EntryDataType
+) -> BaseEntryData | EncryptedEntryData | AccountEntryData | FileEntryData | NoteEntryData:
+    if type is EntryDataType.ENCRYPTED:
+        return EncryptedEntryData
+    
+    if type is EntryDataType.ACCOUNT:
+        return AccountEntryData
+    
+    if type is EntryDataType.FILE:
+        return FileEntryData
+    
+    if type is EntryDataType.NOTE:
+        return NoteEntryData
+    
+    if type is EntryDataType.NONE:
+        return BaseEntryData

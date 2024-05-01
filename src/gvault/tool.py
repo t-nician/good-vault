@@ -2,7 +2,10 @@ import dataclasses
 
 
 class DataToDictHandler:
-    def to_dict(self, bytes_to_hex: bool | None = False) -> dict:
+    def to_dict(
+        self, 
+        bytes_to_hex: bool | None = False, 
+    ) -> dict:
         __self_dict = dataclasses.asdict(self)
         __self_fields = dataclasses.fields(self)
         
@@ -16,6 +19,7 @@ class DataToDictHandler:
                     __processed_dict[field.name] = __field_data.hex()
                 else:
                     __processed_dict[field.name] = __field_data
+                
         
         return __processed_dict
     
