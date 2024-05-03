@@ -1,2 +1,2 @@
-from gvault import base
+from gvault import base, data
 
