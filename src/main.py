@@ -1,14 +1,28 @@
 import json
+import dataclasses
+
 import gvault
 
-vault_data = gvault.data.VaultData()
+@dataclasses.dataclass
+class TestData(gvault.base.BaseFunctions):
+    dont_save: str = gvault.base.data_field(
+        save=False, encrypt=False, default="no"
+    )
+    
+    save_me: str = gvault.base.data_field(
+        save=True, encrypt=False, default="save"
+    )
 
-status_result = gvault.base.StatusResult()
-status_result.complete("Hello", "World!")
 
-vault_data.decrypted.append(status_result)
+@dataclasses.dataclass
+class OtherData(gvault.base.BaseFunctions):
+    data_list: list[TestData] = gvault.base.data_field(
+        save=True, encrypt=False, default_factory=list
+    )
 
-print(vault_data.to_dict(True))
-print(dir(vault_data))
 
-print("test" in ["hello", "test"])
+test = OtherData()
+
+test.data_list.append(TestData())
+
+print(str(test))
