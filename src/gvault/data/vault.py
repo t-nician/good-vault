@@ -1,141 +1,131 @@
-from gvault.data import item
+import json
+import dataclasses
+
+from gvault import tool
+from gvault.data import entry
 
 
-class VaultData:
-    def __init__(
-        self,
-        vault_key: bytes | None = None,
-    ):
-        self.private_items: list[item.PrivateItem] = []
-        self.public_items: list[item.PublicItem] = []
+from Crypto.Cipher import AES
 
-        self.vault_key = vault_key
+
+DEFAULT_KEY_CHECK_DATA = b"success"
+
+
+@dataclasses.dataclass
+class VaultEntryData(tool.DataToDictHandler):
+    entry_data: entry.BaseEntryData | entry.EncryptedEntryData | entry.AccountEntryData | entry.FileEntryData | entry.NoteEntryData = dataclasses.field(
+        metadata={"save": True},
+        default_factory=entry.BaseEntryData
+    )
     
-    
-    def get_all_items_by_name(
-        self, item_name: str
-    ) -> list[item.PrivateItem | item.PublicItem]:
-        private_result = self.get_private_items_by_name(item_name)
-        public_result = self.get_public_items_by_name(item_name)
+    def encrypt_entry_data(self, key: bytes):
+        if type(self.entry_data) is entry.EncryptedEntryData:
+            raise Exception("Cannot encrypt an already encrypted entry!")
         
-        return private_result + public_result
-    
-    
-    def get_private_items_by_name(
-        self, item_name: str
-    ) -> list[item.PrivateItem]:
+        cipher = AES.new(key=key, mode=AES.MODE_EAX)
         
-        return [item.item_name == item_name 
-                and item for item in self.private_items]
-    
-    
-    def get_public_items_by_name(
-        self, item_name: str
-    ) -> list[item.PublicItem]:
-        
-        return [item.item_name == item_name 
-                and item for item in self.public_items] 
-    
-    
-    def create_private_item(
-        self, item_name: str, item_note: str, item_data: item.EncryptedItemData
-                                                        | item.AccountItemData
-                                                        | item.MessageItemData
-                                                        | item.FileItemData,
-        encrypt_on_create: bool | None = False,
-        decrypt_on_create: bool | None = False,
-        key: bytes | None = None
-    ) -> item.PrivateItem:
-        new_private_item = item.PrivateItem(
-            item_name=item_name,
-            item_note=item_note,
-            item_data=item_data,
-            encrypt_on_create=encrypt_on_create,
-            decrypt_on_create=decrypt_on_create,
-            key=key or self.vault_key
+        result = self.entry_data.to_encrypt_and_not_encrypt_dicts(
+            bytes_to_hex=True
         )
         
-        self.private_items.append(new_private_item)
+        encrypt_dict = result[0]
+        decrypt_dict = result[1]
         
-        return new_private_item
-    
-    
-    def create_public_item(
-        self, item_name: str, item_note: str, item_data: item.AccountItemData
-                                                        | item.MessageItemData
-                                                        | item.FileItemData
-    ) -> item.PublicItem:
-        new_public_account = item.PublicItem(
-            item_name=item_name,
-            item_note=item_note,
-            item_data=item_data
+        encrypted_data = cipher.encrypt(json.dumps(encrypt_dict).encode())
+        
+        encrypted_entry_data = entry.EncryptedEntryData(
+            encrypted_type=self.entry_data.entry_type,
+            
+            encryption_nonce=cipher.nonce,
+            encrypted_data=encrypted_data,
+            
+            decrypted_data=decrypt_dict,
         )
         
-        self.public_items.append(new_public_account)
-        
-        return new_public_account
+        self.entry_data = encrypted_entry_data
     
     
-    def convert_public_item_to_private(
-        self, public_item: item.PublicItem,
-        
-        encrypt_on_create: bool | None = False,
-        encryption_key: bytes | None = None
-    ) -> item.PrivateItem:
-        new_private_item = item.PrivateItem(
-            item_name=public_item.item_name,
-            item_note=public_item.item_note,
-            item_data=public_item.item_data,
-            encrypt_on_create=encrypt_on_create,
-            key=encryption_key or self.vault_key
+    def decrypt_entry_data(self, key: bytes):
+        if type(self.entry_data) is not entry.EncryptedEntryData:
+            raise Exception("Entry data is already decrypted!")
+
+        cipher = AES.new(
+            key=key, 
+            nonce=self.entry_data.encryption_nonce,
+            mode=AES.MODE_EAX
         )
         
-        self.public_items.remove(public_item)
-        self.private_items.append(new_private_item)
         
-        return new_private_item
+
+
+@dataclasses.dataclass
+class VaultData(tool.DataToDictHandler):
+    """VaultData
+
+    encrypted_entries:\n       save: True
     
+    decrypted_entries:\n       save: True
     
-    def convert_private_item_to_public(
-        self, private_item: item.PrivateItem,
-        decryption_key: bytes | None = None
-    ) -> item.PublicItem:
-        private_item.decrypt(decryption_key or self.vault_key)
+    key_check_data:\n       save: True
+    
+    key_check_nonce:\n       save: True
+    
+    __vault_key:\n       save: False
+    """
+    encrypted_entries: list[entry.EncryptedEntryData] = dataclasses.field(
+        metadata={"save": True},
+        default_factory=list
+    )
+    
+    decrypted_entries: list[
+        entry.AccountEntryData
+        | entry.FileEntryData
+        | entry.NoteEntryData
+    ] = dataclasses.field(
+        metadata={"save": True},
+        default_factory=list
+    )
+    
+    key_check_data: bytes | None = dataclasses.field(
+        metadata={"save": True},
+        default=None
+    )
+    
+    key_check_nonce: bytes | None = dataclasses.field(
+        metadata={"save": True},
+        default=None
+    )
+    
+    __vault_key: bytes | None = dataclasses.field(
+        metadata={"save": False},
+        default=None
+    )
+    
+    def assign_vault_key(self, key: bytes) -> bool:
         
-        new_public_item = item.PublicItem(
-            item_name=private_item.item_name,
-            item_note=private_item.item_note,
-            item_data=private_item.item_data
-        )
+        cipher = AES.new(
+            key=key, 
+            nonce=self.key_check_nonce, 
+            mode=AES.MODE_EAX
+        ) 
         
-        self.private_items.remove(private_item)
-        self.public_items.append(new_public_item)
-        
-        return new_public_item
-    
-    
-    def to_dict(
-        self, 
-        bytes_to_hex: bool | None = False, 
-        encrypt_private_items: bool | None = True
-    ) -> dict:
-        if encrypt_private_items:
-            if self.vault_key is None:
+        if self.key_check_data is None:
+            if self.key_check_nonce is not None:
                 raise Exception(
-                    "Cannot convert VaultData to dict without vault_key"
-                    + " when encrypt_private_items is True!"
+                    "VaultData creation failure! key_check_data but no nonce!"
                 )
-                
-            for private_item in self.private_items:
-                if type(private_item) is not item.EncryptedItemData:
-                    private_item.encrypt(self.vault_key)
+            
+            self.key_check_data = cipher.encrypt(DEFAULT_KEY_CHECK_DATA)
+            self.key_check_nonce = cipher.nonce
+            
+            self.__vault_key = key
+            
+            return True
         
-        return {
-            "private_items": [
-                item.to_dict(bytes_to_hex) for item in self.private_items
-            ],
-            "public_items": [
-                item.to_dict(bytes_to_hex) for item in self.public_items
-            ]
-        }
         
+        if cipher.decrypt(self.key_check_data) == DEFAULT_KEY_CHECK_DATA:
+            self.__vault_key = key
+            return True
+        
+        return False
+    
