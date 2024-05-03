@@ -60,8 +60,40 @@ class BaseFunctions:
     def __str__(self) -> str:
         return self.to_json(True)
     
+    
     def to_dict(self, bytes_to_hex: bool | None = False) -> dict:
-        return _to_dict(self, bytes_to_hex)
+        processed_dict = {}
+    
+        for field in dataclasses.fields(self):
+            if field.metadata["save"]:
+                result_data = getattr(self, field.name, None)
+                result_type = type(result_data)
+                
+                if callable(getattr(result_data, "to_dict", None)):
+                    processed_dict[field.name] = result_data.to_dict(
+                        bytes_to_hex
+                    )
+                    
+                elif result_type is bytes and bytes_to_hex:
+                    processed_dict[field.name] = result_data.hex()
+                    
+                elif result_type is list:
+                    processed_dict[field.name] = []
+                    
+                    for item in result_data:
+                        if callable(getattr(item, "to_dict", None)):
+                            processed_dict[field.name].append(
+                                item.to_dict(
+                                    bytes_to_hex
+                                )
+                            )
+                        else:
+                            processed_dict[field.name].append(item)
+                            
+                else:
+                    processed_dict[field.name] = result_data              
+        
+        return processed_dict
     
     
     def to_json(self, bytes_to_hex: bool | None = False) -> str:
