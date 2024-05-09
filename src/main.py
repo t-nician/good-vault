@@ -1,23 +1,11 @@
-import gvault
+import gvault, dataclasses
 
-item_data = gvault.data.ItemData(
-    name="name",
-    note="note"
+field = gvault.data.FieldData(
+    field_name="username",
+    field_note="account username",
+    field_data="bruh"
 )
 
-username_field = item_data.add_field(
-    name="username",
-    note="username-note",
-    data="Epic_Username123"
-)
+field.encrypt(b"password12345678")
 
-password_field = item_data.add_field(
-    name="password",
-    note="password-note",
-    data="Epic_Password123",
-    
-    do_i_encrypt=True,
-    key=b"password12345678"
-)
-
-print(password_field)
+print(field)
