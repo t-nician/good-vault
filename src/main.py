@@ -1,11 +1,12 @@
 import gvault, dataclasses
 
-field = gvault.data.FieldData(
-    field_name="username",
-    field_note="account username",
-    field_data="bruh"
-)
+account_data = gvault.data.AccountData()
+account_data.password.data = "password!!!"
 
-field.encrypt(b"password12345678")
+account_data.password.encrypt(b"password12345678")
 
-print(field)
+print(account_data.password)
+
+account_data.password.decrypt(b"password12345678")
+
+print(account_data.password)
