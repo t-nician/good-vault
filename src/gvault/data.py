@@ -1,3 +1,4 @@
+import uuid
 import dataclasses
 
 from Crypto.Cipher import AES
@@ -65,12 +66,15 @@ class VaultField:
         
         self.data = decrypted_data
         self.nonce = ""
-        
-
     
 
 @dataclasses.dataclass
-class AccountData:
+class BaseData:
+    uuid: str = dataclasses.field(default_factory=lambda: uuid.uuid4().hex)
+
+
+@dataclasses.dataclass
+class AccountData(BaseData):
     username: VaultField = dataclasses.field(
         default_factory=lambda: VaultField(
             name="username",
@@ -100,7 +104,7 @@ class AccountData:
     
     
 @dataclasses.dataclass
-class NoteData:
+class NoteData(BaseData):
     title: VaultField = dataclasses.field(
         default_factory=VaultField(
             name="title",
@@ -118,3 +122,10 @@ class NoteData:
             encrypt_field=True
         )
     )
+
+
+class VaultData:
+    vault_data: list[BaseData] = dataclasses.field(default_factory=list)
+    vault_key: bytes = dataclasses.field(default=b"")
+    
+    
