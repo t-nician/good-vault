@@ -15,15 +15,13 @@ class VaultManager:
 
         if result_cls:
             prepped_vault_fields: dict[str, util.VaultField] = {}
-            field_names = dir(result_cls)
+            field_names = dir(result_cls.cls)
 
             for field_name in field_names:
                 if field_name != "type" and entry.get(field_name) is not None:
                     prepped_vault_fields[field_name] = util.VaultField(
                         **entry[field_name]
                     )
-
-            print(prepped_vault_fields)
 
             self.data_entries.append(
                 result_cls(**prepped_vault_fields)

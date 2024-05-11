@@ -12,7 +12,7 @@ vault.add_data_entry_from_dict({
 
     "username": {
         "save": True, "encrypt": False, "is_encrypted": False,
-        "data": "website.com", "nonce": "N/A"
+        "data": "username", "nonce": "N/A"
     },
 
     "password": {
@@ -21,4 +21,4 @@ vault.add_data_entry_from_dict({
     }
 })
 
-print(vault.data_entries)
+print(vault.data_entries[0].wrap.username)

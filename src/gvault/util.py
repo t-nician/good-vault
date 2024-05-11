@@ -23,10 +23,14 @@ class VaultField:
             self.is_encrypted = True
 
 
-def vault_data(cls: object):
-    vault_data_class_dictionary[cls.type] = cls
+def vault_data(obj: object):
     class Wrapper:
+        cls = obj
         def __init__(self, **kwargs):
-            self.wrap = cls(**kwargs)
+            self.wrap = obj()
             self.uuid = uuid.uuid4().hex
+            for (key, value) in kwargs.items():
+                setattr(self.wrap, key, value)
+
+    vault_data_class_dictionary[obj.type] = Wrapper
     return Wrapper
