@@ -26,7 +26,7 @@ class VaultField:
 def vault_data(cls: object):
     vault_data_class_dictionary[cls.type] = cls
     class Wrapper:
-        def __init__(self):
-            self.wrap = cls()
+        def __init__(self, **kwargs):
+            self.wrap = cls(**kwargs)
             self.uuid = uuid.uuid4().hex
     return Wrapper
