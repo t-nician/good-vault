@@ -1,0 +1,9 @@
+[
+    {
+        "type": "account",
+
+        "website": { "save": true, "encrypt": false },
+        "username": { "save": true, "encrypt": false },
+        "password": { "save": true, "encrypt": true }
+    }
+]

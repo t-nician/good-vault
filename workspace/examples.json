@@ -1,0 +1,34 @@
+[
+    {
+        "type": "account",
+
+        "website": {
+            "save": true, "encrypt": false, "is_encrypted": false,
+            "data": "website.com", "nonce": "n/a"
+        },
+
+        "username": {
+            "save": true, "encrypt": false, "is_encrypted": false,
+            "data": "username", "nonce": "n/a"
+        },
+
+        "password": {
+            "save": true, "encrypt": true, "is_encrypted": true,
+            "data": "asdgjiasdfpjioafsd", "nonce": "asdpoijasdfpijo"
+        }
+    },
+
+    {
+        "type": "invalid data type"
+    },
+
+    {
+        "type": "account",
+
+        "invalid_field": {
+            "invalid_data": "ha"
+        }
+    },
+
+    {}
+]
