@@ -42,4 +42,6 @@ class VaultController:
                     field.nonce = nonce
                     field.value = data
 
-        return [entry.model_dump() for entry in self.vault_entries]
+        return [
+            entry.model_dump() for entry in self.vault_entries
+        ]
