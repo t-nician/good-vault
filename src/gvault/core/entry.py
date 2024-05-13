@@ -5,7 +5,7 @@ from pydantic import BaseModel, Field
 
 
 class EntryField(BaseModel):
-    value: str = Field("")
+    value: str | bytes = Field("")
     nonce: str = Field("")
 
     save: bool = Field(False)
@@ -28,6 +28,19 @@ class AccountEntry(BaseEntry):
 
 
 @tool.add_entry_class
+class FileEntry(BaseEntry):
+    name: str = EntryField(save=True, encrypt=False)
+    data: str | bytes = EntryField(save=True, encrypt=True)
+
+
+@tool.add_entry_class
 class NoteEntry(BaseEntry):
     title: str = EntryField(save=True, encrypt=False)
     content: str = EntryField(save=True, encrypt=True)
+
+
+@tool.add_entry_class
+class DataEntry(BaseEntry):
+    name: str = EntryField(save=True, encrypt=False)
+    note: str = EntryField(save=True, encrypt=False)
+    data: str | bytes = EntryField(save=True, encrypt=True)

@@ -1,4 +1,4 @@
-from gvault.core import default, tool
+from gvault.core import entry, tool
 
 
 class VaultController:

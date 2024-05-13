@@ -1,7 +1,7 @@
-from gvault.core import controller, default, tool
+from gvault.core import controller, entry, tool
 
 
 vault = controller.VaultController()
-account_entry = default.AccountEntry()
+account_entry = entry.AccountEntry()
 
-print(account_entry.username)
+print(account_entry.password)
