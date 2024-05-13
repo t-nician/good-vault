@@ -17,4 +17,4 @@ account_entry.password.value = "password"
 
 vault.add_entry(account_entry)
 
-print([entry.model_dump() for entry in vault.vault_entries])
+print(vault.model_dump())
