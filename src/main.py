@@ -1,8 +1,3 @@
-import json
-import fastapi
-import fastapi.encoders
-import pydantic
-
 from gvault.core import controller, entry, tool
 
 
@@ -17,4 +12,4 @@ account_entry.password.value = "password"
 
 vault.add_entry(account_entry)
 
-print(vault.model_dump())
+print(vault.model_dump(encrypt=True, key=b"password12345678"))

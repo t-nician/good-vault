@@ -6,11 +6,14 @@ from pydantic import BaseModel, Field
 
 class EntryField(BaseModel):
     value: str | bytes = Field("")
-    nonce: str = Field("")
+    nonce: str | bytes = Field("")
 
     save: bool = Field(False)
     encrypt: bool = Field(False)
 
+    def is_encrypted(self) -> bool:
+        return self.nonce != ""
+    
 
 class BaseEntry(BaseModel):
     uuid: EntryField = EntryField(save=True, encrypt=False)
@@ -18,6 +21,9 @@ class BaseEntry(BaseModel):
 
     def model_post_init(self, *args, **kwargs):
         self.type.value = type(self).__name__
+        
+        if self.uuid.value == "":
+            self.uuid.value = uuid4().hex
 
 
 class AccountEntry(BaseEntry):
