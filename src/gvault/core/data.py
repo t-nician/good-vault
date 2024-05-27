@@ -23,9 +23,3 @@ class ItemData:
 @dataclass
 class EntryData:
     items: list[ItemData] = field(default_factory=list)
-
-
-@dataclass
-class VaultData:
-    entries: list[EntryData] = field(default_factory=list)
-    

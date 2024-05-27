@@ -1,1 +1,2 @@
-from gvault import core
+from gvault import core, default
+
