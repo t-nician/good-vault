@@ -1,1 +1,1 @@
-from gvault.core import vault, data
+from gvault.core import instance, data

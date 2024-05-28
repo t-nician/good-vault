@@ -22,4 +22,7 @@ class ItemData:
 
 @dataclass
 class EntryData:
+    name: str = field(default="")
+    note: str = field(default="")
     items: list[ItemData] = field(default_factory=list)
+
